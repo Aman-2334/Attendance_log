@@ -92,14 +92,27 @@ class AttendanceService {
         String url = await attendanceImageRef.getDownloadURL();
         urls.add(url);
       }
-      
-      
-      final response = await http.post(
-          Uri.parse("http://192.168.119.70:5000/process_images"),
-          body: json.encode({"urls": urls}));
-      print("response: $response");
-      print(json.decode(response.body));
-      List<String> users = ["Z2Wv7AxOJaOFeKRu4gnUVIqxLwC3"];
+
+      List<String> users = [];
+      var headers = {'Content-Type': 'application/json'};
+      var request = http.Request(
+          'POST', Uri.parse('http://192.168.119.70:5000/process_images'));
+      request.body = json.encode({"urls": urls});
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        List<dynamic> names = json
+            .decode(await response.stream.bytesToString())["recognized_names"];
+
+        Map<String, dynamic> studentIDMapper = Map.from((await Collections().studentMappingCollection().doc(user.institute).get())["ID_mapping"]);
+        users = names.map((e) => "${studentIDMapper[e]}").toList();
+      } else {
+        print("reponse ${response.reasonPhrase}");
+      }
+
+      print("users $users");
       session.imageUrls.addAll(urls);
       for (String user in users) {
         if (!session.studentIds.contains(user)) {

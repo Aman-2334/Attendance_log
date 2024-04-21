@@ -15,6 +15,10 @@ class QRcode extends StatelessWidget {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 100,
+        title: const Text("Student ID"),
+      ),
       body: Center(
         child: SizedBox(
           height: 250,

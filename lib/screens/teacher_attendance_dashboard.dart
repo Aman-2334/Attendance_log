@@ -308,8 +308,8 @@ class _TeacherAttendanceDashboardState
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
                         firstDate:
-                            DateTime.now().subtract(const Duration(days: 200)),
-                        lastDate: DateTime(2099),
+                            DateTime.now().subtract(const Duration(days: 100)),
+                        lastDate: DateTime.now(),
                       );
                       if (pickedDate != null) {
                         setState(() {
