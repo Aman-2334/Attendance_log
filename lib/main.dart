@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
             create: (_) => AttendanceProvider()),
       ],
       child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Attendance Log',
           theme: AppTheme().themeData,
           // home: const AdminHomepage(),

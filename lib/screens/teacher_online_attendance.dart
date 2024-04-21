@@ -23,6 +23,7 @@ class _OnlineAttendanceState extends State<OnlineAttendance> {
     try {
       final XFile? pickedFile = await picker.pickImage(
         source: ImageSource.camera,
+        imageQuality: 70
       );
       if (pickedFile != null) {
         setState(() {
@@ -37,7 +38,7 @@ class _OnlineAttendanceState extends State<OnlineAttendance> {
   void takeGalleryPic() async {
     try {
       int totalPhotos = photos.length;
-      final List<XFile> pickedFiles = await picker.pickMultiImage();
+      final List<XFile> pickedFiles = await picker.pickMultiImage(imageQuality: 70);
       if (pickedFiles.length > maximumPics - totalPhotos) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(

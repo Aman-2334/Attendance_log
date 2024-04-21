@@ -59,6 +59,10 @@ class _ClassroomState extends State<Classroom> {
     Color(0xFF7743DB),
   ];
 
+  Future<void> handleRefresh() async {
+  await studentProvider.getStudentReport(subjectProvider, userProvider);
+}
+
   @override
   void initState() {
     super.initState();
@@ -79,98 +83,101 @@ class _ClassroomState extends State<Classroom> {
         title: const Text("Classroom"),
       ),
       body:
-          Consumer<StudentProvider>(builder: (context, studentProvider, child) {
-        if (!studentProvider.loadingStudentSubjectReport) {
-          if (studentProvider.studentSubjectReport == null ||
-              studentProvider.studentSubjectReport!.isEmpty) {
-            return Center(
-              child: Center(
-                child: Text(
-                  "No Subjects Added",
-                  style: themeData.textTheme.bodySmall,
+          RefreshIndicator(
+            onRefresh: handleRefresh,
+            child: Consumer<StudentProvider>(builder: (context, studentProvider, child) {
+                    if (!studentProvider.loadingStudentSubjectReport) {
+            if (studentProvider.studentSubjectReport == null ||
+                studentProvider.studentSubjectReport!.isEmpty) {
+              return Center(
+                child: Center(
+                  child: Text(
+                    "No Subjects Added",
+                    style: themeData.textTheme.bodySmall,
+                  ),
+                ),
+              );
+            }
+            return SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  children: [
+                    SfCircularChart(
+                      key: GlobalKey(),
+                      annotations: const [
+                        CircularChartAnnotation(widget: RadialCenterText())
+                      ],
+                      series: <RadialBarSeries<AttendanceSummary, String>>[
+                        RadialBarSeries<AttendanceSummary, String>(
+                            onPointTap: (ChartPointDetails chartPointDetails) {
+                              int subjectIndex = chartPointDetails.pointIndex!;
+                              AttendanceSummary attendanceSummary =
+                                  studentProvider.attendanceSummary[subjectIndex];
+                              radialCenterTextStateSetter(() {
+                                radialCenterText =
+                                    "Present: ${attendanceSummary.totalPresent} \nClasses: ${attendanceSummary.totalClass}";
+                              });
+                            },
+                            maximumValue: 100,
+                            dataLabelSettings: const DataLabelSettings(
+                                isVisible: false,
+                                textStyle: TextStyle(fontSize: 10.0)),
+                            dataSource: studentProvider.attendanceSummary,
+                            cornerStyle: CornerStyle.bothCurve,
+                            gap: '5%',
+                            radius: '100%',
+                            innerRadius: '50%',
+                            xValueMapper: (AttendanceSummary data, _) =>
+                                data.subject.name,
+                            yValueMapper: (AttendanceSummary data, _) =>
+                                (data.totalPresent / data.totalClass) * 100,
+                            pointRadiusMapper: (AttendanceSummary data, _) =>
+                                data.subject.code,
+                            pointColorMapper: (AttendanceSummary data, i) =>
+                                colors[i],
+                            dataLabelMapper: (AttendanceSummary data, _) =>
+                                data.subject.name)
+                      ],
+                      tooltipBehavior: TooltipBehavior(
+                        enable: true,
+                        builder: (data, point, series, pointIndex, seriesIndex) {
+                          return Container(
+                            padding: const EdgeInsets.all(10),
+                            color: AppTheme().bottomNavbarColor,
+                            child: Text(
+                              data.subject.name,
+                              style: themeData.textTheme.bodySmall,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: studentProvider.studentSubjectReport!.length,
+                      itemBuilder: (ctx, i) => subjectListTile(
+                          studentProvider.studentSubjectReport![i],
+                          studentProvider.attendanceSummary[i],
+                          i,
+                          themeData),
+                      separatorBuilder: (context, index) => Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 5),
+                        child: const Divider(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
-          }
-          return SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                children: [
-                  SfCircularChart(
-                    key: GlobalKey(),
-                    annotations: const [
-                      CircularChartAnnotation(widget: RadialCenterText())
-                    ],
-                    series: <RadialBarSeries<AttendanceSummary, String>>[
-                      RadialBarSeries<AttendanceSummary, String>(
-                          onPointTap: (ChartPointDetails chartPointDetails) {
-                            int subjectIndex = chartPointDetails.pointIndex!;
-                            AttendanceSummary attendanceSummary =
-                                studentProvider.attendanceSummary[subjectIndex];
-                            radialCenterTextStateSetter(() {
-                              radialCenterText =
-                                  "Present: ${attendanceSummary.totalPresent} \nClasses: ${attendanceSummary.totalClass}";
-                            });
-                          },
-                          maximumValue: 100,
-                          dataLabelSettings: const DataLabelSettings(
-                              isVisible: false,
-                              textStyle: TextStyle(fontSize: 10.0)),
-                          dataSource: studentProvider.attendanceSummary,
-                          cornerStyle: CornerStyle.bothCurve,
-                          gap: '5%',
-                          radius: '100%',
-                          innerRadius: '50%',
-                          xValueMapper: (AttendanceSummary data, _) =>
-                              data.subject.name,
-                          yValueMapper: (AttendanceSummary data, _) =>
-                              (data.totalPresent / data.totalClass) * 100,
-                          pointRadiusMapper: (AttendanceSummary data, _) =>
-                              data.subject.code,
-                          pointColorMapper: (AttendanceSummary data, i) =>
-                              colors[i],
-                          dataLabelMapper: (AttendanceSummary data, _) =>
-                              data.subject.name)
-                    ],
-                    tooltipBehavior: TooltipBehavior(
-                      enable: true,
-                      builder: (data, point, series, pointIndex, seriesIndex) {
-                        return Container(
-                          padding: const EdgeInsets.all(10),
-                          color: AppTheme().bottomNavbarColor,
-                          child: Text(
-                            data.subject.name,
-                            style: themeData.textTheme.bodySmall,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: studentProvider.studentSubjectReport!.length,
-                    itemBuilder: (ctx, i) => subjectListTile(
-                        studentProvider.studentSubjectReport![i],
-                        studentProvider.attendanceSummary[i],
-                        i,
-                        themeData),
-                    separatorBuilder: (context, index) => Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 5),
-                      child: const Divider(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }),
+                    }
+                    return const Center(
+            child: CircularProgressIndicator(),
+                    );
+                  }),
+          ),
     );
   }
 }

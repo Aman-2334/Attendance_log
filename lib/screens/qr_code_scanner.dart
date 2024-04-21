@@ -29,6 +29,7 @@ class _QRCodeScannerState extends State<QRCodeScanner> {
       );
       if (pickedFile != null) {
         result = await Scan.parse(pickedFile.path);
+        print("scan result: $result");
       }
     } catch (e) {
       print("camera picked file error $e");
@@ -49,6 +50,7 @@ class _QRCodeScannerState extends State<QRCodeScanner> {
                 scanAreaScale: .7,
                 scanLineColor: themeData.primaryColor,
                 onCapture: (data) {
+                  print("scan result: $data");
                   Student student = Student.fromJson(jsonDecode(data));
                   widget.getStudent(student);
                   Navigator.of(context).pop();
