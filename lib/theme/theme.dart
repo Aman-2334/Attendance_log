@@ -11,7 +11,6 @@ class AppTheme {
   ThemeData get themeData {
     ThemeData theme = ThemeData(
       appBarTheme: const AppBarTheme(
-        
           color: Color(0xFF003C43),
           titleTextStyle: TextStyle(
             fontSize: 40,
@@ -147,6 +146,10 @@ class AppTheme {
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
+          color: Color(0xFFE3FEF7),
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 15,
           color: Color(0xFFE3FEF7),
         ),
         bodySmall: TextStyle(

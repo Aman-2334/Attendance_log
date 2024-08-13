@@ -16,15 +16,13 @@ class OnlineAttendance extends StatefulWidget {
 class _OnlineAttendanceState extends State<OnlineAttendance> {
   late List<File> photos;
   bool isUploading = false;
-  int maximumPics = 8;
+  int maximumPics = 15;
   final ImagePicker picker = ImagePicker();
 
   void takeCameraPic() async {
     try {
-      final XFile? pickedFile = await picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 70
-      );
+      final XFile? pickedFile =
+          await picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
         setState(() {
           widget.addImage(File(pickedFile.path));
@@ -38,7 +36,8 @@ class _OnlineAttendanceState extends State<OnlineAttendance> {
   void takeGalleryPic() async {
     try {
       int totalPhotos = photos.length;
-      final List<XFile> pickedFiles = await picker.pickMultiImage(imageQuality: 70);
+      final List<XFile> pickedFiles =
+          await picker.pickMultiImage();
       if (pickedFiles.length > maximumPics - totalPhotos) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -1,6 +1,7 @@
 import 'package:attendance_log/provider/subject_provider.dart';
 import 'package:attendance_log/provider/user_provider.dart';
 import 'package:attendance_log/screens/teacher_attendance_dashboard.dart';
+import 'package:attendance_log/screens/teacher_attendance_list.dart';
 import 'package:attendance_log/screens/teacher_profile.dart';
 import 'package:attendance_log/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _TeacherHomepageState extends State<TeacherHomepage> {
 
   List<Widget> screens = [
     const TeacherAttendanceDashboard(),
+    const TeacherAttendanceList(),
     const TeacherProfile(),
   ];
 
@@ -67,7 +69,7 @@ class _TeacherHomepageState extends State<TeacherHomepage> {
         title: selectedScreen == 0
             ? const Text("Attendance")
             : selectedScreen == 1
-                ? const Text("Attendance")
+                ? const Text("Attendance List")
                 : const Text("Profile Setting"),
       ),
       body: screens[selectedScreen],
@@ -81,10 +83,11 @@ class _TeacherHomepageState extends State<TeacherHomepage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               navbarItem(Icons.class_outlined, "Attendance", 0),
-              navbarItem(Icons.account_circle_outlined, "Profile", 1),
+              navbarItem(Icons.inventory_outlined, "Attendance List", 1),
+              navbarItem(Icons.account_circle_outlined, "Profile", 2),
             ],
           ),
         ),
