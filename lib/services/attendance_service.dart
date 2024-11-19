@@ -104,9 +104,7 @@ class AttendanceService {
       List<String> users = [];
       var headers = {'Content-Type': 'application/json'};
       var request = http.Request(
-          'POST',
-          Uri.parse(
-              '$baseurl/attendance/markOnlineAttendance'));
+          'POST', Uri.parse('$baseurl/attendance/markOnlineAttendance'));
       request.body = json.encode({"imageUrls": urls});
       request.headers.addAll(headers);
 
@@ -234,21 +232,33 @@ class AttendanceService {
           pw.MultiPage(
             build: (pw.Context context) {
               return [
-                pw.ListView.builder(
-                  itemCount: absentStudent.length,
-                  itemBuilder: (context, index) {
-                    return pw.Text(absentStudent[index],
-                        style: pw.TextStyle(font: font, fontSize: 16));
-                  },
-                )
+                pw.Header(
+                    text:
+                        "${subject.code}  ${session.date.day}/${session.date.month}/${session.date.year}  Absent List ",
+                    textStyle: pw.TextStyle(
+                      font: font,
+                      fontSize: 20,
+                    )),
+                absentStudent.isEmpty
+                    ? pw.Paragraph(
+                        text: "No Absent Student",
+                        style: pw.TextStyle(font: font, fontSize: 16))
+                    : pw.ListView.builder(
+                        itemCount: absentStudent.length,
+                        itemBuilder: (context, index) {
+                          return pw.Text(absentStudent[index],
+                              style: pw.TextStyle(font: font, fontSize: 16));
+                        },
+                      )
               ];
             },
           ),
         );
 
         final output = await getExternalStorageDirectory();
-        print(output!.path);
-        final file = File('${output!.path}/${subject.code}_${session.id}.pdf');
+        // print(output!.path);
+        final file = File(
+            '${output!.path}/${subject.code}_${session.date.day}_${session.date.month}_${session.date.year}.pdf');
         await file.writeAsBytes(await pdf.save());
         await OpenFile.open(file.path);
       } on Exception catch (e) {

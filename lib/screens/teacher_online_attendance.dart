@@ -16,7 +16,7 @@ class OnlineAttendance extends StatefulWidget {
 class _OnlineAttendanceState extends State<OnlineAttendance> {
   late List<File> photos;
   bool isUploading = false;
-  int maximumPics = 15;
+  int maximumPics = 21;
   final ImagePicker picker = ImagePicker();
 
   void takeCameraPic() async {
@@ -37,12 +37,12 @@ class _OnlineAttendanceState extends State<OnlineAttendance> {
     try {
       int totalPhotos = photos.length;
       final List<XFile> pickedFiles =
-          await picker.pickMultiImage();
+          await picker.pickMultiImage(imageQuality: 80);
       if (pickedFiles.length > maximumPics - totalPhotos) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               margin: AppTheme().snackbarMargin,
-              content: const Text("Allowed maximum number of images are 8")));
+              content: const Text("Allowed maximum number of images are 20")));
         }
         pickedFiles.removeRange(maximumPics - totalPhotos, pickedFiles.length);
       }
